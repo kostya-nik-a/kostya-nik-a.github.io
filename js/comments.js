@@ -33,8 +33,8 @@ function showMenuComments() {
 }
 
 function createCanvas() {
-    const width = getComputedStyle(wrapApp.querySelector('.current-image')).width.slice(0, -2);
-    const height = getComputedStyle(wrapApp.querySelector('.current-image')).height.slice(0, -2);
+    const width = getComputedStyle(wrapApp.querySelector('.current-image')).width.slice(0,-2);
+    const height = getComputedStyle(wrapApp.querySelector('.current-image')).height.slice(0,-2);
 
     canvas.width = width;
     canvas.height = height;
@@ -42,16 +42,9 @@ function createCanvas() {
     wrapCommentsCanvas.appendChild(canvas);
 }
 
-function checkComments() {
-    if (!(menuСomments.dataset.state === 'selected') || !wrapApp.querySelector('#comments-on').checked) {
-        return;
-    }
-    wrapCommentsCanvas.appendChild(createCommentsForm(event.offsetX, event.offsetY));
-}
-
 function createWrapForCanvasComment() {
-    const width = getComputedStyle(wrapApp.querySelector('.current-image')).width;
-    const height = getComputedStyle(wrapApp.querySelector('.current-image')).height;
+    const width = getComputedStyle(wrapApp.querySelector('.current-image')).width.slice(0,-2);
+    const height = getComputedStyle(wrapApp.querySelector('.current-image')).height.slice(0,-2);
     wrapCommentsCanvas.style.cssText = `width: ${width}; height: ${height};	position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: block;`;
     wrapApp.appendChild(wrapCommentsCanvas);
 
@@ -65,148 +58,54 @@ function createWrapForCanvasComment() {
     });
 }
 
-function structureFormComment(posX, posY) {
-    return {
-        tag: 'form',
-        class: 'comments__form',
-        attrs: {
-            style: `top: ${posY}px; left: ${posX}px; z-index: 2`
-        },
-        content: [
-            {
-                tag: 'span',
-                class: 'comments__marker'
-            },
-            {
-                tag: 'input',
-                class: 'comments__marker-checkbox',
-                attrs: {
-                    type: 'checkbox'
-                }
-            },
-            {
-                tag: 'div',
-                class: 'comments__body',
-                content: [
-                    {
-                        tag: 'div',
-                        class: 'comment',
-                        attrs: {
-                            style: "display: none"
-                        },
-                        content: {
-                            tag: 'div',
-                            class: 'loader',
-                            content: [
-                                {tag: 'span'},
-                                {tag: 'span'},
-                                {tag: 'span'},
-                                {tag: 'span'},
-                                {tag: 'span'}
-                            ]
-                        }
-                    },
-                    {
-                        tag: 'textarea',
-                        class: 'comments__input',
-                        attrs: {
-                            type: 'taxt',
-                            placeholder: 'Напишите ответ...'
-                        }
-                    },
-                    {
-                        tag: 'input',
-                        class: 'comments__close',
-                        attrs: {
-                            type: 'button',
-                            value: 'Закрыть'
-                        }
-                    },
-                    {
-                        tag: 'input',
-                        class: 'comments__submit',
-                        attrs: {
-                            type: 'submit',
-                            value: 'Отправить'
-                        }
-                    }
-                ]
-            }
-        ]
-
-    }
-}
-
-function structureMessageComment(msg) {
-    return {
-        tag: 'div',
-        class: 'comment',
-        attrs: {
-            'data-timestamp' : msg.timestamp
-        },
-        content: [
-            {
-                tag: 'p',
-                class: 'comment__time',
-                content: getDate(msg.timestamp)
-            },
-            {
-                tag: 'p',
-                class: 'comment__message',
-                content: msg.message
-            }
-        ]
-    }
-}
-
-function createElement(node) {
-    if ((node === undefined) || (node === null) || (node === false)) {
-        return document.createTextNode('');
-    }
-
-    if ((typeof node === 'string') || (typeof node === 'number') || (typeof node === true)) {
-        return document.createTextNode(node)
-    }
-
-    if(Array.isArray(node)) {
-        return node.reduce(function(f, item) {
-            f.appendChild(createElement(item));
-            return f;
-        }, document.createDocumentFragment(node.tag))
-    }
-
-    const element = document.createElement(node.tag || 'div');
-    element.classList.add(...[].concat(node.class || []));
-    if (node.attrs) {
-        Object.keys(node.attrs).forEach(key => {
-            element.setAttribute(key, node.attrs[key])
-    })
-    }
-
-    if (node.content) {
-        element.appendChild(createElement(node.content))
-    }
-
-    return element;
-}
-
 function getDate(timestamp) {
     const date = new Date(timestamp);
     return date.toLocaleString('ru-RU');
 }
 
+function deleteEmptyFormComments(form = null) {
+    console.log(form);
+    if (form && !form.classList.contains('fillForm')) {
+        wrapCommentsCanvas.removeChild(form);
+        return;
+    }
+
+    const formCommentsList = document.querySelectorAll('.comments__form');
+
+    if (!formCommentsList) {
+        return;
+    }
+
+    formCommentsList.forEach(item => {
+        if (!item.classList.contains('fillForm')) {
+            item.parentElement.removeChild(item)
+        }
+    });
+}
+
+function checkComments() {
+    if (!(menuСomments.dataset.state === 'selected') || !wrapApp.querySelector('#comments-on').checked) {
+        return;
+    }
+    wrapCommentsCanvas.appendChild(createCommentsForm(event.offsetX, event.offsetY));
+}
+
 function createCommentsForm(x, y) {
+    deleteEmptyFormComments();
     const formComment = createElement(structureFormComment(x, y));
+    formComment.querySelector('.comments__marker-checkbox').checked = true;
+
     const left = x;
     const top = y;
 
-    formComment.style.cssText = `top: ${top}px; left: ${left}px; z-index: 2;`;
+    formComment.style.cssText = `left: ${left}px; top: ${top}px; z-index: 2;`;
     formComment.dataset.left = left;
     formComment.dataset.top = top;
 
     hide(formComment.querySelector('.loader').parentElement);
 
     formComment.querySelector('.comments__close').addEventListener('click', () => {
+        deleteEmptyFormComments();
         formComment.querySelector('.comments__marker-checkbox').checked = false;
     });
 
@@ -218,6 +117,7 @@ function createCommentsForm(x, y) {
 
         formComment.querySelector('.loader').parentNode.style.display = '';
         formComment.querySelector('.comments__input').value = '';
+        formComment.classList.add('fillForm');
 
         fetchRequest(`${urlApi}/pic/${dataParse.id}/comments`, 'POST', messageSend, 'null')
         .then((result) => {
@@ -267,37 +167,13 @@ function updateCommentForm(newComment) {
             newForm.dataset.top = newComment[id].top;
             newForm.style.left = newComment[id].left + 'px';
             newForm.style.top = newComment[id].top + 'px';
+
             wrapCommentsCanvas.appendChild(newForm);
             addMessageComment(newComment[id], newForm);
-            console.log(newComment[id]);
 
             if (!wrapApp.querySelector('#comments-on').checked) {
                 newForm.style.display = 'none';
             }
         }
     });
-}
-
-const copyUrl = document.querySelector('.menu_copy');
-
-copyUrl.addEventListener('click', function(event) {
-    menuUrl.select();
-    try {
-        var successful = document.execCommand('copy');
-        var msg = successful ? 'успешно ' : 'не';
-        console.log(`URL ${msg} скопирован`);
-    } catch(err) {
-        console.log('Ошибка копирования');
-    }
-    window.getSelection().removeAllRanges();
-});
-
-let url = (new URL(`${window.location.href}`)).searchParams;
-let paramId = url.get('id');
-urlId();
-
-function urlId() {
-    if (!paramId) { return;	}
-    getFileInfo(paramId);
-    showMenuComments();
 }

@@ -75,7 +75,7 @@ function throttleCanvas(callback, delay) {
 
 function tick () {
     if (menu.offsetHeight > 66) {
-        menu.style.left = (wrapApp.offsetWidth - menu.offsetWidth) - 2 + 'px';
+        menu.style.left = (wrapApp.offsetWidth - menu.offsetWidth) + 'px';
     }
 
     if(needsRepaint) {

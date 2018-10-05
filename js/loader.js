@@ -60,6 +60,19 @@ function uploadFileFromButtom(event) {
 
     document.querySelector('#fileInput').addEventListener('change', event => {
         const files = Array.from(event.currentTarget.files);
+
+        if (canvas) {
+            canvas.style.background = '';
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            repaint ();
+        }
+
+        const commentsForm = document.querySelectorAll('.comments__form');
+        if (commentsForm) {
+            commentsForm.forEach(item => {
+                item.parentElement.removeChild(item);
+            })
+        }
         sendFile(files);
     });
 
@@ -111,18 +124,44 @@ function getFileInfo(id) {
 
     dataParse = JSON.parse(xhr.responseText);
     host = `${window.location.origin}${window.location.pathname}?id=${dataParse.id}`;
-
+    history.pushState(null, null, host);
     wssConnection();
     setCurrentImage(dataParse);
     currentImage.src = dataParse.url;
-    menuBurger.style.cssText = '';
-    showMenu();
+    menuUrl.value = host;
+
+    hideMenu();
 
     currentImage.addEventListener('load', () => {
         hide(loader);
         createWrapForCanvasComment();
         createCanvas();
+
     });
 
     updateCommentForm(dataParse.comments);
+}
+
+const copyUrl = document.querySelector('.menu_copy');
+
+copyUrl.addEventListener('click', function(event) {
+    menuUrl.select();
+    try {
+        var successful = document.execCommand('copy');
+        var msg = successful ? 'успешно ' : 'не';
+        console.log(`URL ${msg} скопирован`);
+    } catch(err) {
+        console.log('Ошибка копирования');
+    }
+    window.getSelection().removeAllRanges();
+});
+
+let url = (new URL(`${window.location.href}`)).searchParams;
+let paramId = url.get('id');
+urlId();
+
+function urlId() {
+    if (!paramId) { return;	}
+    getFileInfo(paramId);
+    showMenuComments();
 }

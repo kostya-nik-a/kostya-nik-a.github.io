@@ -26,6 +26,7 @@ const toggleOn = document.querySelector('#comments-on');
 const toggleOff = document.querySelector('#comments-off');
 const menuСomments = menu.querySelector('.comments');
 const formComments = document.querySelector('.comments__form');
+const menuShared = document.querySelector('.share');
 const canvas = document.createElement('canvas');
 const ctx = canvas.getContext('2d');
 const wrapCommentsCanvas = document.createElement('div');
@@ -62,7 +63,10 @@ function showMenu() {
     menu.dataset.state = 'default';
 
     Array.from(menu.querySelectorAll('.mode')).forEach(item => {
-        item.dataset.state = ''
+        item.dataset.state = '';
+        item.style.display = '';
+        menuNewLoad.style.display = '';
+        menuBurger.style.display = '';
 
         item.addEventListener('click', () => {
             if (!item.classList.contains('new')){
@@ -73,6 +77,19 @@ function showMenu() {
                 menuUrl.value = host;
             }
         })
+    })
+}
+
+function hideMenu() {
+    Array.from(menu.querySelectorAll('.mode')).forEach(item => {
+        item.style.display = 'none';
+
+        menuBurger.dataset.state = 'selected';
+        menuBurger.setAttribute('style', 'display: inline-block;');
+
+        menuShared.dataset.state = 'selected';
+        menuShared.setAttribute('style', 'display: inline-block;');
+
     })
 }
 

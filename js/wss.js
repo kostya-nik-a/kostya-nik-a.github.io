@@ -26,8 +26,7 @@ function wssConnection() {
         }
 
         if (JSON.parse(event.data).event === 'comment'){
-            insertWssCommentForm(JSON.parse(event.data).comment);
-            console.log(JSON.parse(event.data).comment);
+                insertWssCommentForm(JSON.parse(event.data).comment);
         }
 
         if (JSON.parse(event.data).event === 'mask'){
