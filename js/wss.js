@@ -1,22 +1,9 @@
 'use strict';
 
-let connection;
-
 const urlWss = 'wss://neto-api.herokuapp.com/pic';
 
-function insertWssCommentForm(wssComment) {
-    const wsCommentEdited = {};
-    wsCommentEdited[wssComment.id] = {};
-    wsCommentEdited[wssComment.id].left = wssComment.left;
-    wsCommentEdited[wssComment.id].top = wssComment.top;
-    wsCommentEdited[wssComment.id].timestamp = wssComment.timestamp;
-    wsCommentEdited[wssComment.id].message = wssComment.message;
-
-    updateCommentForm(wsCommentEdited);
-}
-
 function wssConnection() {
-    connection = new WebSocket(`${urlWss}/${dataParse.id}`);
+    connection = new WebSocket(`${urlWss}/${imageId}`);
 
     connection.addEventListener('message', event => {
         if (JSON.parse(event.data).event === 'pic'){
@@ -26,7 +13,29 @@ function wssConnection() {
         }
 
         if (JSON.parse(event.data).event === 'comment'){
-                insertWssCommentForm(JSON.parse(event.data).comment);
+            const {left, top} = JSON.parse(event.data).comment;
+
+            const forms = document.querySelectorAll('.comments__form');
+            let formWork = null;
+            let needNewFormBool = true;
+            const formName = `msgID${left}${top}`;
+
+            if (forms.length) {
+                forms.forEach(form => {
+                    if (formName === form.getAttribute('msgid')) {
+                        needNewFormBool = false;
+                        formWork = form;
+                    }
+                });
+            }
+
+            if (needNewFormBool) {
+                formWork = createChatForm(left, top);
+                wrapCommentsCanvas.appendChild(formWork);
+            }
+
+            addMsg(formWork, {'comments': {'comment': JSON.parse(event.data).comment}});
+            turnOnOfComments(checkComments());
         }
 
         if (JSON.parse(event.data).event === 'mask'){
@@ -34,4 +43,3 @@ function wssConnection() {
         }
     });
 }
-

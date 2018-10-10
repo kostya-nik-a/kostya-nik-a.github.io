@@ -1,5 +1,7 @@
 'use strict';
 
+let movedPiece = null;
+
 function dragFloatingMenu(event) {
     if (!event.target.classList.contains('drag')) {
         return;
