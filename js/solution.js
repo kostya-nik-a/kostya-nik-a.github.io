@@ -19,6 +19,12 @@ const menuUrl = document.querySelector('.menu__url');
 const toggleButton = document.querySelectorAll('.menu__toggle');
 const toggleOn = document.querySelector('#comments-on');
 const toggleOff = document.querySelector('#comments-off');
+const wrapAppCurrentImage = wrapApp.querySelector('.current-image');
+const classCommentsForm = '.comments__form';
+const classCommentsBody = '.comments__body';
+const classCommentsBodyChild = '.comments__body :nth-last-child(4)';
+const classCommentsMarker = '.comments__marker-checkbox';
+const fillFrom = 'fillForm';
 
 function activateDefault() {
     function urlId() {
@@ -38,7 +44,7 @@ function activateDefault() {
                 history.pushState(null, null, host);
                 imageLoader.setAttribute('style', 'display: none');
                 currentImage.src = result.url;
-                delNodeElements('.comments__form');
+                delNodeElements(classCommentsForm);
                 currentImage.classList.add('load');
                 return result
             })
@@ -57,6 +63,7 @@ function activateReviewing(apiInfo) {
 function showMenu() {
     showError();
     deleteEmptyChats();
+
     menuItems.forEach(item => {
         item.dataset.state = '';
         item.style.display = '';
@@ -65,10 +72,12 @@ function showMenu() {
 
 function commentsMode() {
     deleteEmptyChats();
+
     menuItems.forEach(item => {
         item.dataset.state = '';
         item.style.display = 'none';
     });
+
     commentsButton.dataset.state = 'selected';
     commentsButton.style.display = '';
     turnOnOfComments(checkComments())
@@ -76,6 +85,7 @@ function commentsMode() {
 
 function checkComments() {
     let result = true;
+
     if (commentsButton.dataset.state !== 'selected') {
         return false
     }
@@ -85,27 +95,26 @@ function checkComments() {
             return result = false;
         }
     });
+
     return result
 }
 
 function turnOnOfComments(boolValue) {
     showError();
     deleteEmptyChats();
-    const formsList = document.querySelectorAll('.comments__form');
+
+    const formsList = document.querySelectorAll(classCommentsForm);
 
     if (boolValue) {
         formsList.forEach(form => {
             form.style.display = '';
-        })
-    } else {
-        formsList.forEach(form => {
-            form.style.display = 'none';
         })
     }
 }
 
 function shareMode(apiInfo) {
     showError();
+
     menuItems.forEach(item => {
         item.dataset.state = '';
         item.style.display = 'none';
@@ -119,6 +128,7 @@ function shareMode(apiInfo) {
         wssConnection();
         turnOnOfComments(checkComments())
     });
+
     menuUrl.value = host;
     sharedButton.dataset.state = 'selected';
     sharedButton.style.display = '';

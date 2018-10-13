@@ -14,19 +14,19 @@ let connection;
 
 document.querySelectorAll('.menu__color').forEach(color => {
     if (color.checked) {
-        currentColor = color.value;
+        currentColor = getComputedStyle(color.nextElementSibling).backgroundColor;
     };
 
     color.addEventListener('click', (event) => {
-        currentColor = event.currentTarget.value;
+        currentColor = getComputedStyle(event.currentTarget.nextElementSibling).backgroundColor;
     });
 });
 
 function createWrapforCanvas() {
     delNodeElements('.wrapCanvas');
 
-    const width = getComputedStyle(wrapApp.querySelector('.current-image')).width.slice(0,-2);
-    const height = getComputedStyle(wrapApp.querySelector('.current-image')).height.slice(0,-2);
+    const width = getComputedStyle(wrapAppCurrentImage).width.slice(0,-2);
+    const height = getComputedStyle(wrapAppCurrentImage).height.slice(0,-2);
 
     wrapCommentsCanvas = createElement(wrapCanvasStructure(width, height));
     wrapCommentsCanvas.style.cssText = `width: ${width}; height: ${height};	position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: block;`;
@@ -36,8 +36,8 @@ function createWrapforCanvas() {
 function createCanvas() {
     delNodeElements('.canvasNode');
 
-    const width = getComputedStyle(wrapApp.querySelector('.current-image')).width.slice(0,-2);
-    const height = getComputedStyle(wrapApp.querySelector('.current-image')).height.slice(0,-2);
+    const width = getComputedStyle(wrapAppCurrentImage).width.slice(0,-2);
+    const height = getComputedStyle(wrapAppCurrentImage).height.slice(0,-2);
 
     curves = [];
     canvas = createElement(canvasStructure(width, height));
@@ -82,9 +82,9 @@ function createCanvas() {
     canvas.addEventListener('click', (event) => {
         if (checkComments()) {
             let {offsetX, offsetY} = event;
-            let newform = wrapCommentsCanvas.appendChild(createChatForm(offsetX - 20, offsetY));
+            let newform = wrapCommentsCanvas.appendChild(createChatForm(offsetX, offsetY));
             turnOffAllComents();
-            newform.querySelector('.comments__marker-checkbox').checked = true;
+            newform.querySelector(classCommentsMarker).checked = true;
         }
     });
 }
@@ -145,8 +145,8 @@ function throttleCanvas(callback, delay) {
 
             setTimeout(() => {
                 callback();
-            isWaiting = false;
-        }, delay);
+                isWaiting = false;
+            }, delay);
         }
     }
 }
@@ -166,4 +166,4 @@ function tick () {
     window.requestAnimationFrame(tick);
 }
 
-tick();
+setInterval(tick, 10);

@@ -3,36 +3,36 @@
 function structureFormComment(posX, posY) {
     return {
         tag: 'form',
-        cls: 'comments__form',
+        class: 'comments__form',
         attrs: {
             msgid: `msgID${posX}${posY}`,
-            style: `top: ${posY}px; left: ${posX}px; z-index: 2`
+            style: `top: ${posY - 14}px; left: ${posX - 22}px; z-index: 2`
         },
         content: [
             {
                 tag: 'span',
-                cls: 'comments__marker'
+                class: 'comments__marker'
             },
             {
                 tag: 'input',
-                cls: 'comments__marker-checkbox',
+                class: 'comments__marker-checkbox',
                 attrs: {
                     type: 'checkbox'
                 }
             },
             {
                 tag: 'div',
-                cls: 'comments__body',
+                class: 'comments__body',
                 content: [
                     {
                         tag: 'div',
-                        cls: 'comment',
+                        class: 'comment',
                         attrs: {
                             style: "display: none"
                         },
                         content: {
                             tag: 'div',
-                            cls: 'loader',
+                            class: 'loader',
                             content: [
                                 {tag: 'span'},
                                 {tag: 'span'},
@@ -44,7 +44,7 @@ function structureFormComment(posX, posY) {
                     },
                     {
                         tag: 'textarea',
-                        cls: 'comments__input',
+                        class: 'comments__input',
                         attrs: {
                             type: 'taxt',
                             placeholder: 'Напишите ответ...'
@@ -52,7 +52,7 @@ function structureFormComment(posX, posY) {
                     },
                     {
                         tag: 'input',
-                        cls: 'comments__close',
+                        class: 'comments__close',
                         attrs: {
                             type: 'button',
                             value: 'Закрыть'
@@ -60,7 +60,7 @@ function structureFormComment(posX, posY) {
                     },
                     {
                         tag: 'input',
-                        cls: 'comments__submit',
+                        class: 'comments__submit',
                         attrs: {
                             type: 'submit',
                             value: 'Отправить'
@@ -80,14 +80,14 @@ function structureMessageComment(msg) {
 
     let msgNode = {
         tag: 'div',
-        cls: 'comment',
+        class: 'comment',
         attrs: {
             'data-timestamp': msg.timestamp
         },
         content: [
             {
                 tag: 'p',
-                cls: 'comment__time',
+                class: 'comment__time',
                 content: getDate(msg.timestamp)
             }
         ]
@@ -99,7 +99,7 @@ function structureMessageComment(msg) {
         }
         msgNode.content.push({
             tag: 'p',
-            cls: 'comment__message',
+            class: 'comment__message',
             content: item
         })
     });
@@ -110,7 +110,7 @@ function structureMessageComment(msg) {
 function canvasStructure(widthPx, heightPx) {
     return {
         tag: 'canvas',
-        cls: 'canvasNode',
+        class: 'canvasNode',
         attrs: {
             'width': widthPx,
             'height': heightPx
@@ -121,7 +121,7 @@ function canvasStructure(widthPx, heightPx) {
 function wrapCanvasStructure(widthPx, heightPx) {
     return {
         tag: 'div',
-        cls: 'wrapCanvas',
+        class: 'wrapCanvas',
         attrs: {
             'style': `width: ${widthPx}; height: ${heightPx}`
         }
@@ -145,7 +145,8 @@ function createElement(node) {
     }
 
     const element = document.createElement(node.tag || 'div');
-    element.classList.add(...[].concat(node.cls || []));
+    element.classList.add(...[].concat(node.class || []));
+
     if (node.attrs) {
         Object.keys(node.attrs).forEach(key => {
             element.setAttribute(key, node.attrs[key])

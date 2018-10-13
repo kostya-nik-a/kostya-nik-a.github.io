@@ -1,38 +1,35 @@
 'use strict';
 
 function deleteEmptyChats(formNode = null) {
-    if (formNode && !formNode.classList.contains('fillForm')) {
+    if (formNode && !formNode.classList.contains(fillFrom)) {
         wrapCommentsCanvas.removeChild(formNode);
         return;
     }
-
-    const formsList = document.querySelectorAll('.comments__form');
+    const formsList = document.querySelectorAll(classCommentsForm);
 
     if (!formsList) {
         return;
     }
     formsList.forEach(item => {
-        if (!item.classList.contains('fillForm')) {
+        if (!item.classList.contains(fillFrom)) {
             item.parentElement.removeChild(item)
         }
     });
 }
 
 function turnOffAllComents() {
-    const msgNodeList = document.querySelectorAll('.comments__marker-checkbox');
-
+    const msgNodeList = document.querySelectorAll(classCommentsMarker);
     if (msgNodeList) {
         msgNodeList.forEach(msgNode => {
             msgNode.checked = false;
-    })
+        })
     }
 }
 
 function createChatForm(posX, posY) {
     deleteEmptyChats();
     const newform = createElement(structureFormComment(posX, posY));
-    const newFormCheckbox = newform.querySelector('.comments__marker-checkbox');
-
+    const newFormCheckbox = newform.querySelector(classCommentsMarker);
     newFormCheckbox.addEventListener('click', () => {
         deleteEmptyChats();
         const isChecked = newFormCheckbox.checked;
@@ -55,13 +52,11 @@ function createChatForm(posX, posY) {
         newFormLoader.parentNode.style.display = '';
         newFormCommentInput.value = '';
 
-        fetchRequest(`${urlAPI}/${imageId}/comments`, 'POST', mesageVar, 'msg')
-            .then((result) => {
-                newFormLoader.parentNode.style.display = 'none';
-                addMsg(newform, result);
-            })
+        fetchRequest(`${urlAPI}/${imageId}/comments`, 'POST', mesageVar, 'msg').then((result) => {
+            newFormLoader.parentNode.style.display = 'none';
+            addMsg(newform, result);
+        })
     });
-
 
     newform.querySelector('.comments__close').addEventListener('click', (event) => {
         event.preventDefault();
@@ -88,6 +83,7 @@ function addMsg(form, msgList) {
     for (let i in msgList) {
         const comment = msgList[i];
         const key = `msgID${comment.left}${comment.top}`;
+
         if (messagesObjectList[key]) {
             messagesObjectList[key].push(comment)
         } else {
@@ -101,9 +97,9 @@ function addMsg(form, msgList) {
                 const timeSt = messagesObjectList[item][msg].timestamp;
                 if (msgIdList.indexOf(timeSt) === -1) {
                     const msgNode = createElement(structureMessageComment(messagesObjectList[item][msg]));
-                    const theLastChild = form.querySelector('.comments__body :nth-last-child(4)');
-                    form.querySelector('.comments__body').insertBefore(msgNode, theLastChild);
-                    form.classList.add('fillForm');
+                    const theLastChild = form.querySelector(classCommentsBodyChild);
+                    form.querySelector(classCommentsBody).insertBefore(msgNode, theLastChild);
+                    form.classList.add(fillFrom);
                 }
             }
         }
@@ -114,13 +110,12 @@ function buildMess(info) {
     if (!info) {
         return;
     }
-
     let comments = info['comments'];
     let messagesObjectList = {};
-
     for (let i in comments) {
         const comment = comments[i];
         const key = `msgID${comment.left}${comment.top}`;
+
         if (messagesObjectList[key]) {
             messagesObjectList[key].push(comment);
         } else {
@@ -129,13 +124,17 @@ function buildMess(info) {
     }
 
     for (let i in messagesObjectList) {
-        const {left, top} = messagesObjectList[i][0];
+        const {
+            left,
+            top
+        } = messagesObjectList[i][0];
         const formTemp = createChatForm(left, top);
+
         for (let msg in messagesObjectList[i]) {
             const msgNode = createElement(structureMessageComment(messagesObjectList[i][msg]));
-            const theLastChild = formTemp.querySelector('.comments__body :nth-last-child(4)');
-            formTemp.querySelector('.comments__body').insertBefore(msgNode, theLastChild);
-            formTemp.classList.add('fillForm');
+            const theLastChild = formTemp.querySelector(classCommentsBodyChild);
+            formTemp.querySelector(classCommentsBody).insertBefore(msgNode, theLastChild);
+            formTemp.classList.add(fillFrom);
         }
         wrapCommentsCanvas.appendChild(formTemp);
     }
@@ -144,21 +143,19 @@ function buildMess(info) {
 
 toggleButton.forEach(button => {
     deleteEmptyChats();
-
     button.addEventListener('click', event => {
         const radioFlag = event.target.value;
-        const forms = document.querySelectorAll('.comments__form');
+        const forms = document.querySelectorAll(classCommentsForm);
+
         if (radioFlag === 'off') {
             toggleOn.checked = false;
             toggleOff.checked = true;
-
             forms.forEach(form => {
                 form.style.display = 'none';
             })
         } else {
             toggleOn.checked = true;
             toggleOff.checked = false;
-
             forms.forEach(form => {
                 form.style.display = '';
             })

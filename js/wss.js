@@ -6,16 +6,22 @@ function wssConnection() {
     connection = new WebSocket(`${urlWss}/${imageId}`);
 
     connection.addEventListener('message', event => {
-        if (JSON.parse(event.data).event === 'pic'){
-            if (JSON.parse(event.data).pic.mask) {
-                canvas.style.background = `url(${JSON.parse(event.data).pic.mask})`;
+        const parseMsgData = JSON.parse(event.data);
+        const parseMsgEvent = JSON.parse(event.data).event;
+
+        if (parseMsgEvent === 'pic'){
+            if (parseMsgData.pic.mask) {
+                canvas.style.background = `url(${parseMsgData.pic.mask})`;
             }
         }
 
-        if (JSON.parse(event.data).event === 'comment'){
-            const {left, top} = JSON.parse(event.data).comment;
+        if (parseMsgEvent === 'comment'){
+            const {
+                left,
+                top
+            } = parseMsgData.comment;
 
-            const forms = document.querySelectorAll('.comments__form');
+            const forms = document.querySelectorAll(classCommentsForm);
             let formWork = null;
             let needNewFormBool = true;
             const formName = `msgID${left}${top}`;
@@ -34,12 +40,12 @@ function wssConnection() {
                 wrapCommentsCanvas.appendChild(formWork);
             }
 
-            addMsg(formWork, {'comments': {'comment': JSON.parse(event.data).comment}});
+            addMsg(formWork, {'comments': {'comment': parseMsgData.comment}});
             turnOnOfComments(checkComments());
         }
 
-        if (JSON.parse(event.data).event === 'mask'){
-            canvas.style.background = `url(${JSON.parse(event.data).url})`;
+        if (parseMsgEvent === 'mask'){
+            canvas.style.background = `url(${parseMsgData.url})`;
         }
     });
 }

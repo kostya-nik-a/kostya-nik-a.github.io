@@ -25,13 +25,12 @@ function fetchRequest(url, method, bodyRequest = null, header = null) {
 
 function sendFile(file) {
     const formData = new FormData();
-    const fileName = file[0].name;
-    const fileType = file[0].type;
+    const {name, type} = file[0];
 
-    formData.append('title', fileName);
+    formData.append('title', name);
     formData.append('image', file[0]);
 
-    if (fileType === "image/jpeg" || fileType === "image/png") {
+    if (type === "image/jpeg" || type === "image/png") {
         fetchRequest(urlAPI, 'POST', formData)
             .then((result) => {
                 fetchRequest(`${urlAPI}/${result.id}`, 'GET')
@@ -56,7 +55,7 @@ function uploadFileFromButtom(event) {
     input.click();
 
     showError();
-    delNodeElements('.comments__form');
+    delNodeElements(classCommentsForm);
     input.addEventListener('change', event => {
         const files = Array.from(event.currentTarget.files);
 
@@ -64,6 +63,7 @@ function uploadFileFromButtom(event) {
             canvas.style.background = '';
             ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
+
         currentImage.src = '';
         imageLoader.removeAttribute('style');
         sendFile(files);

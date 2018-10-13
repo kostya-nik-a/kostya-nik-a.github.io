@@ -32,7 +32,7 @@ function moveFloatingMenu(callback) {
             isWaiting = true;
             requestAnimationFrame(() => {
                 isWaiting = false;
-        });
+            });
         }
     };
 }
